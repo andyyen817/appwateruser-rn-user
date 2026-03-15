@@ -138,6 +138,7 @@ app.use((err, req, res, next) => {
     res.status(500).send('服务器内部错误');
 });
 
+// 启动服务器
 app.listen(PORT, () => {
     const latestAPK = getLatestAPK();
     const apkExists = latestAPK !== null;
@@ -161,39 +162,5 @@ app.listen(PORT, () => {
     console.log('公网访问: https://atmwater-user-app.zeabur.app');
     console.log('下载地址: https://atmwater-user-app.zeabur.app/download');
     console.log('版本信息: https://atmwater-user-app.zeabur.app/api/version');
-    console.log('========================================');
-});
-
-// 404 处理
-app.use((req, res) => {
-    console.warn(`[404] 未找到路径: ${req.method} ${req.url}`);
-    res.status(404).send('页面未找到');
-});
-
-// 错误处理
-app.use((err, req, res, next) => {
-    console.error(`[服务器错误] ${err.stack}`);
-    res.status(500).send('服务器内部错误');
-});
-
-app.listen(PORT, () => {
-    const apkPath = path.join(__dirname, 'public/downloads/ATMWater-User-v0.4.apk');
-    const apkExists = fs.existsSync(apkPath);
-
-    console.log('========================================');
-    console.log('  ATMWater 用户APP分发服务器启动成功');
-    console.log('========================================');
-    console.log(`服务端口: ${PORT}`);
-    console.log(`环境变量 PORT: ${process.env.PORT || '未设置'}`);
-    console.log('');
-    console.log('用户APP (v0.4):');
-    console.log(`   状态: ${apkExists ? '存在' : '不存在'}`);
-    if (apkExists) {
-        const stat = fs.statSync(apkPath);
-        console.log(`   大小: ${(stat.size / 1048576).toFixed(2)} MB`);
-    }
-    console.log('');
-    console.log('公网访问: https://atmwater-user-app.zeabur.app');
-    console.log('下载地址: https://atmwater-user-app.zeabur.app/download');
     console.log('========================================');
 });
