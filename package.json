@@ -1,0 +1,16 @@
+{
+  "name": "atmwater-user-distribution",
+  "version": "1.0.0",
+  "description": "ATMWater 用户APP分发服务器",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
