@@ -19,8 +19,14 @@ function getLatestAPK() {
         return null;
     }
 
-    // 按文件名排序，获取最新版本
-    apkFiles.sort().reverse();
+    // 按版本号数值排序，获取最新版本
+    apkFiles.sort((a, b) => {
+        const va = a.match(/v(\d+)\.(\d+)/);
+        const vb = b.match(/v(\d+)\.(\d+)/);
+        if (!va || !vb) return 0;
+        const major = parseInt(vb[1]) - parseInt(va[1]);
+        return major !== 0 ? major : parseInt(vb[2]) - parseInt(va[2]);
+    });
     return apkFiles[0];
 }
 
