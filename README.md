@@ -6,8 +6,8 @@
 
 ## 访问地址
 
-- **Zeabur部署地址**: `https://atmwater-user-app.zeabur.app`
-- **下载地址**: `https://atmwater-user-app.zeabur.app/download`
+- **Zeabur部署地址**: `https://appwateruser-rn-user.zeabur.app`
+- **下载地址**: `https://appwateruser-rn-user.zeabur.app/download`
 
 ## 项目结构
 
