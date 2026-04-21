@@ -1,306 +1,369 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ATMWater 用户APP下载</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ATMWater User App Download</title>
+  <style>
+    :root {
+      --bg: #07111f;
+      --panel: rgba(10, 27, 46, 0.84);
+      --panel-border: rgba(125, 211, 252, 0.16);
+      --text: #eff6ff;
+      --muted: rgba(239, 246, 255, 0.72);
+      --accent: #22d3ee;
+      --accent-2: #38bdf8;
+      --success: #10b981;
+      --danger: #f87171;
+      --shadow: 0 24px 60px rgba(1, 10, 19, 0.45);
+    }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
+    * {
+      box-sizing: border-box;
+    }
 
-        .container {
-            background: white;
-            border-radius: 24px;
-            padding: 48px;
-            max-width: 480px;
-            width: 100%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(34, 211, 238, 0.22), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(56, 189, 248, 0.18), transparent 28%),
+        linear-gradient(140deg, #020617 0%, #07111f 48%, #0b1c33 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 16px;
+    }
 
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
+    .shell {
+      width: 100%;
+      max-width: 920px;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 20px;
+    }
 
-        .logo {
-            font-size: 72px;
-            margin-bottom: 16px;
-            animation: float 3s ease-in-out infinite;
-        }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      overflow: hidden;
+    }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
+    .hero {
+      padding: 36px;
+      position: relative;
+    }
 
-        h1 {
-            color: #333;
-            font-size: 32px;
-            margin-bottom: 8px;
-            font-weight: 700;
-        }
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -60px -80px auto;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(34, 211, 238, 0.24), transparent 70%);
+      pointer-events: none;
+    }
 
-        .subtitle {
-            color: #666;
-            font-size: 18px;
-            margin-bottom: 8px;
-        }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(34, 211, 238, 0.12);
+      color: var(--accent);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
 
-        .version {
-            color: #666;
-            font-size: 14px;
-            background: #f0f0f0;
-            padding: 4px 12px;
-            border-radius: 12px;
-            display: inline-block;
-        }
+    h1 {
+      margin: 0 0 14px;
+      font-size: clamp(34px, 6vw, 56px);
+      line-height: 0.95;
+    }
 
-        .download-section {
-            margin: 32px 0;
-        }
+    .subtitle {
+      margin: 0 0 28px;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.7;
+      max-width: 44ch;
+    }
 
-        .download-btn {
-            display: block;
-            width: 100%;
-            padding: 18px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            text-align: center;
-            text-decoration: none;
-            border-radius: 16px;
-            font-size: 18px;
-            font-weight: 600;
-            transition: all 0.3s;
-            border: none;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 28px;
+    }
 
-        .download-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
-        }
+    .meta-card {
+      padding: 16px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
 
-        .download-btn:active {
-            transform: translateY(-1px);
-        }
+    .meta-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
 
-        .file-info {
-            margin-top: 12px;
-            text-align: center;
-            color: #666;
-            font-size: 13px;
-        }
+    .meta-value {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text);
+      word-break: break-word;
+    }
 
-        .qrcode-section {
-            margin-top: 24px;
-            padding: 24px;
-            background: #f8f9fa;
-            border-radius: 16px;
-            text-align: center;
-        }
+    .download-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
 
-        .qrcode-title {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 16px;
-            font-weight: 500;
-        }
+    .download-btn {
+      appearance: none;
+      border: none;
+      border-radius: 18px;
+      padding: 16px 22px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+      color: #032235;
+      font-size: 16px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+      box-shadow: 0 14px 30px rgba(34, 211, 238, 0.2);
+    }
 
-        #qrcode {
-            display: inline-block;
-            padding: 12px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
+    .download-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 18px 36px rgba(34, 211, 238, 0.28);
+    }
 
-        .info-box {
-            background: #e3f2fd;
-            border-left: 4px solid #2196f3;
-            padding: 20px;
-            margin-top: 32px;
-            border-radius: 12px;
-        }
+    .secondary-link {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+    }
 
-        .info-title {
-            font-weight: 600;
-            color: #1976d2;
-            margin-bottom: 12px;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-        }
+    .secondary-link:hover {
+      color: var(--text);
+    }
 
-        .info-content {
-            color: #555;
-            font-size: 14px;
-            line-height: 1.8;
-        }
+    .notice {
+      margin-top: 14px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+    }
 
-        .step {
-            margin: 10px 0;
-            padding-left: 24px;
-            position: relative;
-        }
+    .side {
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
 
-        .step::before {
-            content: "→";
-            position: absolute;
-            left: 0;
-            color: #2196f3;
-            font-weight: bold;
-            font-size: 16px;
-        }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(16, 185, 129, 0.12);
+      color: #6ee7b7;
+      font-size: 13px;
+      font-weight: 600;
+      width: fit-content;
+    }
 
-        .warning-box {
-            background: #fff3e0;
-            border-left: 4px solid #ff9800;
-            padding: 20px;
-            margin-top: 20px;
-            border-radius: 12px;
-        }
+    .status-pill.error {
+      background: rgba(248, 113, 113, 0.12);
+      color: var(--danger);
+    }
 
-        .warning-title {
-            font-weight: 600;
-            color: #f57c00;
-            margin-bottom: 12px;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-        }
+    .side-card {
+      padding: 20px;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
 
-        .footer {
-            text-align: center;
-            margin-top: 32px;
-            padding-top: 24px;
-            border-top: 2px solid #eee;
-            color: #999;
-            font-size: 13px;
-        }
+    .side-card h2 {
+      margin: 0 0 12px;
+      font-size: 18px;
+    }
 
-        .footer a {
-            color: #667eea;
-            text-decoration: none;
-        }
+    .side-card p,
+    .side-card li {
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+    }
 
-        .features {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin: 24px 0;
-        }
+    ul {
+      margin: 0;
+      padding-left: 18px;
+    }
 
-        .feature-item {
-            text-align: center;
-            padding: 16px;
-            background: #f8f9fa;
-            border-radius: 12px;
-        }
+    .footer {
+      margin-top: auto;
+      color: rgba(239, 246, 255, 0.56);
+      font-size: 12px;
+    }
 
-        .feature-icon {
-            font-size: 24px;
-            margin-bottom: 8px;
-        }
+    .loading {
+      opacity: 0.78;
+    }
 
-        .feature-text {
-            font-size: 12px;
-            color: #666;
-        }
-    </style>
+    @media (max-width: 880px) {
+      .shell {
+        grid-template-columns: 1fr;
+      }
+
+      .hero,
+      .side {
+        padding: 24px;
+      }
+
+      .meta-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="logo">💧</div>
-            <h1>ATMWater</h1>
-            <div class="subtitle">用户APP</div>
-            <div class="version">版本 v0.23 | 正式版</div>
+  <main class="shell">
+    <section class="panel hero">
+      <div class="eyebrow">ATMWater User App</div>
+      <h1>Download the latest ATMWater APK</h1>
+      <p class="subtitle">
+        This page always points to the newest Android build placed in the distribution repository.
+        If a new APK is uploaded, the version and download button below update automatically.
+      </p>
+
+      <div class="meta-grid">
+        <div class="meta-card">
+          <div class="meta-label">Version</div>
+          <div class="meta-value loading" id="version">Loading...</div>
         </div>
-
-        <div class="features">
-            <div class="feature-item">
-                <div class="feature-icon">💳</div>
-                <div class="feature-text">扫码取水</div>
-            </div>
-            <div class="feature-item">
-                <div class="feature-icon">💰</div>
-                <div class="feature-text">钱包充值</div>
-            </div>
-            <div class="feature-item">
-                <div class="feature-icon">📍</div>
-                <div class="feature-text">查找水站</div>
-            </div>
-            <div class="feature-item">
-                <div class="feature-icon">📊</div>
-                <div class="feature-text">用水记录</div>
-            </div>
+        <div class="meta-card">
+          <div class="meta-label">File Size</div>
+          <div class="meta-value loading" id="size">Loading...</div>
         </div>
-
-        <div class="download-section">
-            <a href="/download" class="download-btn" download>
-                立即下载
-            </a>
-
-            <div class="file-info">
-                文件大小：约 36 MB | Android 6.0+
-            </div>
-
-            <div class="qrcode-section">
-                <div class="qrcode-title">手机扫码下载</div>
-                <div id="qrcode"></div>
-            </div>
+        <div class="meta-card">
+          <div class="meta-label">Updated</div>
+          <div class="meta-value loading" id="updatedAt">Loading...</div>
         </div>
+      </div>
 
-        <div class="info-box">
-            <div class="info-title">安装说明</div>
-            <div class="info-content">
-                <div class="step">下载 APK 文件到手机</div>
-                <div class="step">打开文件管理器，找到下载的 APK</div>
-                <div class="step">点击安装（首次需开启"未知来源"权限）</div>
-                <div class="step">安装完成后即可使用</div>
-            </div>
-        </div>
+      <div class="download-row">
+        <a class="download-btn" id="downloadBtn" href="/download">Download APK</a>
+        <a class="secondary-link" href="/api/version" target="_blank" rel="noreferrer">View version API</a>
+      </div>
 
-        <div class="warning-box">
-            <div class="warning-title">注意事项</div>
-            <div class="info-content">
-                <div class="step">建议在 WiFi 环境下下载</div>
-                <div class="step">如之前安装过测试版，请先卸载</div>
-                <div class="step">安装包名：com.atmwater.user</div>
-            </div>
-        </div>
+      <div class="notice" id="notice">
+        Preparing latest package information...
+      </div>
+    </section>
 
-        <div class="footer">
-            <p>ATMWater | <a href="/health">系统状态</a></p>
-        </div>
-    </div>
+    <aside class="panel side">
+      <div class="status-pill" id="statusPill">Service online</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-    <script>
-        const downloadUrl = window.location.origin + '/download';
+      <section class="side-card">
+        <h2>Install steps</h2>
+        <ul>
+          <li>Download the APK to your Android phone.</li>
+          <li>Open the downloaded file from the browser or file manager.</li>
+          <li>If needed, allow installation from unknown sources for this browser.</li>
+          <li>Finish installation, then open the app and sign in.</li>
+        </ul>
+      </section>
 
-        new QRCode(document.getElementById("qrcode"), {
-            text: downloadUrl,
-            width: 200,
-            height: 200,
-            colorDark: "#000000",
-            colorLight: "#ffffff",
-            correctLevel: QRCode.CorrectLevel.H
-        });
-    </script>
+      <section class="side-card">
+        <h2>Release notes</h2>
+        <p>
+          This page is tied to the file inside <code>public/downloads</code>. The newest version in that folder
+          becomes the active download automatically after deployment.
+        </p>
+      </section>
+
+      <section class="side-card">
+        <h2>Quick checks</h2>
+        <p>Use these endpoints after deployment:</p>
+        <ul>
+          <li><code>/download</code> for direct APK download</li>
+          <li><code>/api/version</code> for version metadata</li>
+          <li><code>/health</code> for deployment status</li>
+        </ul>
+      </section>
+
+      <div class="footer">ATMWater distribution portal</div>
+    </aside>
+  </main>
+
+  <script>
+    async function loadVersionInfo() {
+      const versionEl = document.getElementById('version');
+      const sizeEl = document.getElementById('size');
+      const updatedAtEl = document.getElementById('updatedAt');
+      const noticeEl = document.getElementById('notice');
+      const statusPillEl = document.getElementById('statusPill');
+      const downloadBtn = document.getElementById('downloadBtn');
+
+      try {
+        const response = await fetch('/api/version', { cache: 'no-store' });
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          throw new Error(data.message || 'Unable to load APK information');
+        }
+
+        versionEl.textContent = `v${data.version}`;
+        versionEl.classList.remove('loading');
+
+        sizeEl.textContent = data.sizeFormatted;
+        sizeEl.classList.remove('loading');
+
+        const updatedAt = new Date(data.updatedAt);
+        updatedAtEl.textContent = updatedAt.toLocaleString();
+        updatedAtEl.classList.remove('loading');
+
+        downloadBtn.href = data.downloadUrl || '/download';
+        noticeEl.textContent = `${data.filename} is ready for download. Recommended for Android 6.0 and above.`;
+        statusPillEl.textContent = 'Latest package ready';
+      } catch (error) {
+        versionEl.textContent = 'Unavailable';
+        sizeEl.textContent = '-';
+        updatedAtEl.textContent = '-';
+        noticeEl.textContent = error.message || 'Failed to load package information.';
+        statusPillEl.textContent = 'Package unavailable';
+        statusPillEl.classList.add('error');
+        downloadBtn.removeAttribute('href');
+        downloadBtn.style.pointerEvents = 'none';
+        downloadBtn.style.opacity = '0.5';
+      }
+    }
+
+    loadVersionInfo();
+  </script>
 </body>
 </html>

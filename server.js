@@ -1,172 +1,147 @@
 const express = require('express');
-const path = require('path');
 const fs = require('fs');
+const path = require('path');
+
 const app = express();
 const PORT = process.env.PORT || 8080;
+const PUBLIC_DIR = path.join(__dirname, 'public');
+const DOWNLOADS_DIR = path.join(PUBLIC_DIR, 'downloads');
 
-// 获取最新版本的APK
+function parseVersionParts(filename) {
+  const match = filename.match(/v(\d+(?:\.\d+)+)\.apk$/i);
+  if (!match) {
+    return [];
+  }
+
+  return match[1].split('.').map((part) => Number.parseInt(part, 10) || 0);
+}
+
+function compareVersionParts(left, right) {
+  const maxLength = Math.max(left.length, right.length);
+
+  for (let index = 0; index < maxLength; index += 1) {
+    const diff = (right[index] || 0) - (left[index] || 0);
+    if (diff !== 0) {
+      return diff;
+    }
+  }
+
+  return 0;
+}
+
 function getLatestAPK() {
-    const downloadsDir = path.join(__dirname, 'public/downloads');
+  if (!fs.existsSync(DOWNLOADS_DIR)) {
+    return null;
+  }
 
-    if (!fs.existsSync(downloadsDir)) {
-        return null;
-    }
+  const apkFiles = fs
+    .readdirSync(DOWNLOADS_DIR)
+    .filter((fileName) => /^ATMWater-User-v.+\.apk$/i.test(fileName))
+    .sort((left, right) => compareVersionParts(parseVersionParts(left), parseVersionParts(right)));
 
-    const files = fs.readdirSync(downloadsDir);
-    const apkFiles = files.filter(f => f.startsWith('ATMWater-User-') && f.endsWith('.apk'));
-
-    if (apkFiles.length === 0) {
-        return null;
-    }
-
-    // 按版本号数值排序，获取最新版本
-    apkFiles.sort((a, b) => {
-        const va = a.match(/v(\d+)\.(\d+)/);
-        const vb = b.match(/v(\d+)\.(\d+)/);
-        if (!va || !vb) return 0;
-        const major = parseInt(vb[1]) - parseInt(va[1]);
-        return major !== 0 ? major : parseInt(vb[2]) - parseInt(va[2]);
-    });
-    return apkFiles[0];
+  return apkFiles[0] || null;
 }
 
-// 从文件名提取版本号
 function extractVersion(filename) {
-    const versionMatch = filename.match(/v(\d+\.\d+)/);
-    return versionMatch ? versionMatch[1] : 'unknown';
+  const match = filename.match(/v(\d+(?:\.\d+)*)\.apk$/i);
+  return match ? match[1] : 'unknown';
 }
 
-// 请求日志中间件
+function buildApkMeta(filename) {
+  if (!filename) {
+    return null;
+  }
+
+  const filePath = path.join(DOWNLOADS_DIR, filename);
+  if (!fs.existsSync(filePath)) {
+    return null;
+  }
+
+  const stats = fs.statSync(filePath);
+
+  return {
+    app: 'ATMWater User App',
+    version: extractVersion(filename),
+    filename,
+    size: stats.size,
+    sizeFormatted: `${(stats.size / 1048576).toFixed(2)} MB`,
+    updatedAt: stats.mtime.toISOString(),
+    downloadUrl: '/download',
+  };
+}
+
 app.use((req, res, next) => {
-    const timestamp = new Date().toISOString();
-    const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-    console.log(`[${timestamp}] ${req.method} ${req.url} - IP: ${clientIP}`);
-    next();
+  const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} - ${clientIp}`);
+  next();
 });
 
-// 静态文件服务
-app.use(express.static('public'));
+app.use(express.static(PUBLIC_DIR, {
+  extensions: ['html'],
+}));
 
-// APK下载 - 自动检测最新版本
+app.get('/', (req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'index.html'));
+});
+
 app.get('/download', (req, res) => {
-    const latestAPK = getLatestAPK();
-    const clientIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  const latestAPK = getLatestAPK();
 
-    console.log(`[下载请求] 用户APP下载请求 - IP: ${clientIP}`);
+  if (!latestAPK) {
+    return res.status(404).send('APK file not found');
+  }
 
-    if (!latestAPK) {
-        console.error(`[错误] 未找到APK文件`);
-        return res.status(404).send('用户APP文件未找到');
-    }
-
-    const filePath = path.join(__dirname, 'public/downloads', latestAPK);
-    const stat = fs.statSync(filePath);
-    const fileSize = stat.size;
-    const fileSizeMB = (fileSize / 1048576).toFixed(2);
-
-    console.log(`[下载开始] ${latestAPK} - 文件大小: ${fileSizeMB} MB - IP: ${clientIP}`);
-
-    res.setHeader('Content-Type', 'application/vnd.android.package-archive');
-    res.setHeader('Content-Disposition', `attachment; filename=${latestAPK}`);
-    res.setHeader('Content-Length', fileSize);
-
-    const fileStream = fs.createReadStream(filePath);
-
-    fileStream.on('error', (err) => {
-        console.error(`[错误] 文件流读取失败: ${err.message}`);
-        res.status(500).send('文件读取失败');
-    });
-
-    fileStream.on('end', () => {
-        console.log(`[下载完成] ${latestAPK} 下载成功 - IP: ${clientIP}`);
-    });
-
-    fileStream.pipe(res);
+  const filePath = path.join(DOWNLOADS_DIR, latestAPK);
+  return res.download(filePath, latestAPK);
 });
 
-// 版本信息API
 app.get('/api/version', (req, res) => {
-    const latestAPK = getLatestAPK();
+  const apkMeta = buildApkMeta(getLatestAPK());
 
-    if (!latestAPK) {
-        return res.status(404).json({
-            error: 'No APK found',
-            app: 'ATMWater User App'
-        });
-    }
+  if (!apkMeta) {
+    return res.status(404).json({
+      success: false,
+      message: 'No APK found',
+      app: 'ATMWater User App',
+    });
+  }
 
-    const version = extractVersion(latestAPK);
-    const filePath = path.join(__dirname, 'public/downloads', latestAPK);
-    const stats = fs.statSync(filePath);
-
-    const versionInfo = {
-        app: 'ATMWater User App',
-        version: version,
-        filename: latestAPK,
-        size: stats.size,
-        sizeFormatted: `${(stats.size / 1048576).toFixed(2)} MB`,
-        updatedAt: stats.mtime,
-        downloadUrl: '/download'
-    };
-
-    console.log(`[版本查询] 当前版本: v${version}`);
-    res.json(versionInfo);
+  return res.json({
+    success: true,
+    ...apkMeta,
+  });
 });
 
-// 健康检查
 app.get('/health', (req, res) => {
-    const latestAPK = getLatestAPK();
-    const apkExists = latestAPK !== null;
+  const apkMeta = buildApkMeta(getLatestAPK());
 
-    const healthData = {
-        app: 'ATMWater User App',
-        status: 'ok',
-        timestamp: new Date().toISOString(),
-        version: apkExists ? extractVersion(latestAPK) : 'N/A',
-        available: apkExists,
-        filename: apkExists ? latestAPK : 'N/A',
-        size: apkExists ? `${(fs.statSync(path.join(__dirname, 'public/downloads', latestAPK)).size / 1048576).toFixed(2)} MB` : 'N/A'
-    };
-
-    console.log(`[健康检查] 状态: ${healthData.status}, 文件存在: ${apkExists}`);
-    res.json(healthData);
+  return res.json({
+    app: 'ATMWater User App',
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    available: Boolean(apkMeta),
+    version: apkMeta?.version || 'N/A',
+    filename: apkMeta?.filename || 'N/A',
+    size: apkMeta?.sizeFormatted || 'N/A',
+  });
 });
 
-// 404 处理
 app.use((req, res) => {
-    console.warn(`[404] 未找到路径: ${req.method} ${req.url}`);
-    res.status(404).send('页面未找到');
+  res.status(404).send('Page not found');
 });
 
-// 错误处理
-app.use((err, req, res, next) => {
-    console.error(`[服务器错误] ${err.stack}`);
-    res.status(500).send('服务器内部错误');
+app.use((error, req, res, next) => {
+  console.error('[Distribution] Server error:', error);
+  res.status(500).send('Internal server error');
 });
 
-// 启动服务器
 app.listen(PORT, () => {
-    const latestAPK = getLatestAPK();
-    const apkExists = latestAPK !== null;
+  const apkMeta = buildApkMeta(getLatestAPK());
 
-    console.log('========================================');
-    console.log('  ATMWater 用户APP分发服务器启动成功');
-    console.log('========================================');
-    console.log(`服务端口: ${PORT}`);
-    console.log(`环境变量 PORT: ${process.env.PORT || '未设置'}`);
-    console.log('');
-    console.log('用户APP:');
-    console.log(`   状态: ${apkExists ? '存在' : '不存在'}`);
-    if (apkExists) {
-        const version = extractVersion(latestAPK);
-        const stat = fs.statSync(path.join(__dirname, 'public/downloads', latestAPK));
-        console.log(`   版本: v${version}`);
-        console.log(`   文件: ${latestAPK}`);
-        console.log(`   大小: ${(stat.size / 1048576).toFixed(2)} MB`);
-    }
-    console.log('');
-    console.log('公网访问: https://atmwater-user-app.zeabur.app');
-    console.log('下载地址: https://atmwater-user-app.zeabur.app/download');
-    console.log('版本信息: https://atmwater-user-app.zeabur.app/api/version');
-    console.log('========================================');
+  console.log('========================================');
+  console.log('ATMWater user distribution server started');
+  console.log(`Port: ${PORT}`);
+  console.log(`Latest APK: ${apkMeta?.filename || 'not found'}`);
+  console.log(`Version: ${apkMeta?.version || 'N/A'}`);
+  console.log('========================================');
 });
