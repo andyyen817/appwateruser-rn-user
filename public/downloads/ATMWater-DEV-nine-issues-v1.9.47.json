@@ -1,0 +1,13 @@
+{
+  "environment": "DEV",
+  "versionName": "1.9.47-dev",
+  "versionCode": 1947,
+  "package": "com.atmwater.client.dev",
+  "filename": "ATMWater-DEV-nine-issues-v1.9.47.apk",
+  "bytes": 93002603,
+  "sha256": "2b629ebf69c313fb3a02e6fa7d8a99ea69cd6de7134faadbefbfde567ac86d12",
+  "sourceCommit": "350d505",
+  "backendCommit": "9c390e0",
+  "adminCommit": "0cf81a4",
+  "validation": "Build, automated targeted tests, QA emulator install and launch passed. Physical device acceptance pending."
+}
