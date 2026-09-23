@@ -7,7 +7,7 @@
   "bytes": 93002603,
   "sha256": "2b629ebf69c313fb3a02e6fa7d8a99ea69cd6de7134faadbefbfde567ac86d12",
   "sourceCommit": "350d505",
-  "backendCommit": "9c390e0",
+  "backendCommit": "c7248f4",
   "adminCommit": "0cf81a4",
   "validation": "Build, automated targeted tests, QA emulator install and launch passed. Physical device acceptance pending."
 }
