@@ -1,0 +1,14 @@
+{
+  "environment": "DEV",
+  "versionName": "1.9.48-dev",
+  "versionCode": 1948,
+  "package": "com.atmwater.client.dev",
+  "filename": "ATMWater-DEV-card-fix-v1.9.48.apk",
+  "bytes": 93002403,
+  "sha256": "207723d5a5c73c8ad3a26af7d9cfe2f81d571f53fb8ea3089d30523ed5613528",
+  "sourceCommit": "e1ea17e9b12e8918e809ac5be895938c2d4eb71b",
+  "backendCommit": "db607f8bce92445be37e8f8b331c593ae2f178f0",
+  "adminCommit": "69005bb9d23b5f2b01533202c768f4968244e42b",
+  "changes": "Fix nine corrupted Chinese manual card entry and binding messages. DEV A00000912 restored using its existing RFID; no wallet or balance changes.",
+  "validation": "Five binding tests, locale validation, APK bundled-text verification, QA emulator installation and launch passed. Authenticated manual-entry screen and engineer physical acceptance pending. Firmware verification belongs to engineer through admin UI."
+}
