@@ -1,0 +1,16 @@
+﻿{
+    "environment":  "DEV",
+    "versionName":  "1.9.49-dev",
+    "versionCode":  1949,
+    "package":  "com.atmwater.client.dev",
+    "filename":  "ATMWater-DEV-card-binding-errors-v1.9.49-compat.apk",
+    "bytes":  93992600,
+    "sha256":  "581751c6a3fba67523c93b313f20d75115d3f741ae1a6ea56ed24861d8697205",
+    "sourceCommit":  "963033993a110c2d1614658197b9f02fd592590c",
+    "signerSha256":  "fac61745dc0903786fb9ede62a962b399f7348f0bb6f899b8332667591033b9c",
+    "signatures":  [
+                       "v1",
+                       "v2"
+                   ],
+    "validation":  "APK signature verified for Android API 23 and newer; same signer as DEV 1.9.47/1.9.48; emulator overwrite install succeeded. Physical device install remains to be checked."
+}
